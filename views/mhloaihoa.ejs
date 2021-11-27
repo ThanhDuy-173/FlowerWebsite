@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Man Hinh Loai Hoa</title>
+</head>
+<body>
+    <div>
+        <table border="1">
+            <tr>
+                <th>STT</th>
+                <th>Ma Loai Hoa</th>
+                <th>Ten Loai Hoa</th>
+            </tr>
+            <tr>
+                <% 
+                    if(userData.lenght != 0){
+                        var i=1;
+                        userData.forEach(function(data){ 
+                %>
+                <tr>
+                    <td><%=i; %></td>
+                    <td><%=data.maloai %></td>
+                    <td><%=data.tenloai %></td>
+                </tr>
+                <% i++; }) %>
+                <% } else { %>
+                <tr>
+                    <td colspan="7">No Data Found</td>
+                </tr>
+                <% } %>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
