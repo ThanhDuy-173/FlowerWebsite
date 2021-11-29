@@ -1,6 +1,6 @@
 var express = require("express");
 var app = express();
-
+const { google } = require("googleapis")
 app.use(express.json());
 app.use(express.urlencoded({
   extended: true
@@ -25,6 +25,13 @@ app.use(session({
 
 // send email
 var nodemailer = require("nodemailer");
+const OAuth2 = google.auth.OAuth2
+const GOOGLE_CLIENT_ID = '322892568053-d9m3pidboorcj40saqdi7khisg8j6f4r.apps.googleusercontent.com'
+const GOOGLE_CLIENT_SECRET = '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'
+const REDIRECT_URL = 'https://developers.google.com/oauthplayground'
+const MAILING_SERVICE_REFRESH_TOKEN = '1//04xNpOGzqN0DZCgYIARAAGAQSNwF-L9IrW4E5ovJgzmWu9y44oHAP_SzS2USK0L_9afHUyGGJpf5ukrbUjiVJQgwqV_qRSJELWDU'
+const OAuth2Client = new OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, REDIRECT_URL)
+OAuth2Client.setCredentials({ refresh_token: MAILING_SERVICE_REFRESH_TOKEN })
 
 // upload file
 const fileUpload = require('express-fileupload');
@@ -143,26 +150,35 @@ function HienThiCTGH(req, res) {
   }
 }
 
-function sendEmail(toMail, subject, message) {
-  var transporter = nodemailer.createTransport({
+async function sendEmail(toMail, subject, message) {
+  const accessToken = await OAuth2Client.getAccessToken()
+
+  const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'banhangnodejs@gmail.com',
-      pass: 'node123$%^'
+        type: 'OAuth2',
+        user: 'flowershopwebsite@gmail.com',
+        clientId: GOOGLE_CLIENT_ID,
+        clientSecret: GOOGLE_CLIENT_SECRET,
+        refreshToken: MAILING_SERVICE_REFRESH_TOKEN,
+        accessToken: accessToken
     }
-  });
+  })
+
   var mailOptions = {
-    from: 'banhangnodejs@gmail.com',
+    from: 'Flower Shop <flowershopwebsite@gmail.com>',
     to: toMail,
     subject: subject,
     html: message
   };
+
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
     } else {
       console.log('Email send: ' + info.response);
     }
+    transporter.close();
   });
 }
 
