@@ -42,6 +42,7 @@ module.exports.selectChitietAdmin = async function (maHoa) {
     kq = kq + "<b style='font-size:25px;'>" + cthoa[0].tenhoa + "</b><br><br>";
     kq = kq + "Giá bán: " + cthoa[0].giaban + " VND<br><br>";
     kq = kq + "Thành phần chính: <br>" + cthoa[0].mota + "<br><br>";
+    kq = kq + "<a href='/capnhat/" + cthoa[0].mahoa + "'>Cập nhât</a><br><br>";
     kq = kq + "<a href='/'>Quay về trang chủ</a></td>";
     kq = kq + "<td align='center'><a align='center' onClick='Xoahoa(" + cthoa[0].mahoa + ")'><img align='center' src='/images/delete.jpg' style='width:25px;height:25px;'/></a><br><br></td></tr>"
     kq = kq + "</table>";
@@ -82,6 +83,11 @@ module.exports.selectByCode = async function (mahoa) {
 module.exports.insert = async function (newHoa) {
     createdHoa = await bangHoa.insert(newHoa);
     return createdHoa;
+}
+
+module.exports.update = async function (mahoa, data) {
+    updateHoa = await bangHoa.update(mahoa, data);
+    return updateHoa;
 }
 
 module.exports.delete = async function (xoaHoa) {

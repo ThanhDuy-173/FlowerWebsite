@@ -1,8 +1,10 @@
 //npm i mongoose
 var mongoose = require('mongoose');
 mongoose.connect('mongodb+srv://riverdev:erEPhkShr2VkPUQj@cluster0.vsufc.mongodb.net/qlbanhoa', {
+    useCreateIndex: true,
+    useNewUrlParser: true,
     useUnifiedTopology: true,
-    useNewUrlParser: true
+    useFindAndModify: false
 });
 
 mongoose.Promise = global.Promise;
