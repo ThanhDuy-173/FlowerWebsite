@@ -9,7 +9,8 @@
     "mongoose": "^5.12.11",
     "mysql2": "^2.2.5",
     "nodemailer": "^6.6.2",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "sanitize-html": "^2.6.0"
   },
   "name": "buoi2_ejs",
   "version": "1.0.0",

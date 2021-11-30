@@ -1,4 +1,5 @@
 var bangHoa = require('../models/hoamodel');
+var bangCMT = require('../models/binhluanmodel')
 module.exports.select = async function (maLoaiHoa) {
 
     var dshoa = await bangHoa.select(maLoaiHoa);
@@ -17,8 +18,9 @@ module.exports.select = async function (maLoaiHoa) {
 
 module.exports.selectChitiet = async function (maHoa) {
     var cthoa = await bangHoa.selectCTH(maHoa);
+    var comments = await bangCMT.select(maHoa)
     var kq = "";
-    kq = kq + "<table width='50%' align='center' border='1px' style='border-color:red;'>";
+    kq = kq + "<div class='stylexx'><table width='50%' align='left' border='1px' style='border-color:red;'>";
     kq = kq + "<tr>";
     kq = kq + "<td style='padding:5px;padding-right:55px'>";
     kq = kq + "<img align='right' src='/images/" + cthoa[0].hinh + "'></td>";
@@ -28,13 +30,25 @@ module.exports.selectChitiet = async function (maHoa) {
     kq = kq + "Thành phần chính: <br>" + cthoa[0].mota + "<br><br>";
     kq = kq + "<a href='/'>Quay về trang chủ</a></td></tr>";
     kq = kq + "</table>";
+    kq = kq + "<div class='cmt-container'>";
+    kq = kq + "<form id='formx' name='formx' method='post' action='/comments/"+cthoa[0].mahoa+"'>"
+    kq = kq + "<span>COMMENTS</span>";
+    kq = kq + "<table width='100%' border='0' cellpadding='0' cellspacing='2'>"
+    kq = kq + "<tr><td width='80%'><input name='cmt' type='text' id='cmt' size='15' class='cmt-input'/></td> <td width='20%'> <input type='submit' name='Submit' value='Gửi' class='summit-bnt'/></td></tr>"
+    kq = kq + "<tr><td width='80%'></td><td width='20%'><b></b></td></tr>"
+    comments.map(function(cmt) {
+        kq = kq + "<tr><td width='80%'><p>"+cmt.comment+"</p></td><td width='20%'><b>"+cmt.user+"</b></td></tr>"
+    })
+    kq = kq + "</table></from>";
+    kq = kq + "</div></div>"
     return kq;
 }
 
 module.exports.selectChitietAdmin = async function (maHoa) {
     var cthoa = await bangHoa.selectCTH(maHoa);
-    var kq = "";
-    kq = kq + "<table width='50%' align='center' border='1px' style='border-color:red;'>";
+    var comments = await bangCMT.select(maHoa)
+    var kq = "<div class='stylexx'>";
+    kq = kq + "<table width='50%' align='left' border='1px' style='border-color:red;'>";
     kq = kq + "<>";
     kq = kq + "<td style='padding:5px;padding-right:55px'>";
     kq = kq + "<img align='right' src='/images/" + cthoa[0].hinh + "'></td>";
@@ -46,6 +60,17 @@ module.exports.selectChitietAdmin = async function (maHoa) {
     kq = kq + "<a href='/'>Quay về trang chủ</a></td>";
     kq = kq + "<td align='center'><a align='center' onClick='Xoahoa(" + cthoa[0].mahoa + ")'><img align='center' src='/images/delete.jpg' style='width:25px;height:25px;'/></a><br><br></td></tr>"
     kq = kq + "</table>";
+    kq = kq + "<div class='cmt-container'>";
+    kq = kq + "<form id='formx' name='formx' method='post' action='/comments/"+cthoa[0].mahoa+"'>"
+    kq = kq + "<span>COMMENTS</span>";
+    kq = kq + "<table width='100%' border='0' cellpadding='0' cellspacing='2'>"
+    kq = kq + "<tr><td width='80%'><input name='cmt' type='text' id='cmt' size='15' class='cmt-input'/></td> <td width='20%'> <input type='submit' name='Submit' value='Gửi' class='summit-bnt'/></td></tr>"
+    kq = kq + "<tr><td width='80%'></td><td width='20%'><b></b></td></tr>"
+    comments.map(function(cmt) {
+        kq = kq + "<tr><td width='80%'><p>"+cmt.comment+"</p></td><td width='20%'><b>"+cmt.user+"</b></td></tr>"
+    })
+    kq = kq + "</table></from>";
+    kq = kq + "</div></div>"
     return kq;
 }
 
@@ -93,4 +118,8 @@ module.exports.update = async function (mahoa, data) {
 module.exports.delete = async function (xoaHoa) {
     deletedHoa = await bangHoa.delete(xoaHoa);
     return deletedHoa;
+}
+module.exports.addComment = async function (data) {
+    const cmt = await bangCMT.add(data);
+    return cmt;
 }

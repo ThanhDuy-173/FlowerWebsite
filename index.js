@@ -495,6 +495,21 @@ app.get("/:maloai", function (req, res) {
     HienThi(req, res, req.params.maloai);
 });
 
+// COMMENTS
+app.post('/comments/:mahoa', async function (req, res) {
+  const user = req.session.kh;
+  const mahoa = req.params.mahoa;
+  const cmt = req.body;
+  if ( user=== undefined )
+  {
+    res.send("Bạn phải đăng nhập trước khi bình luận. <a href='/detail/"+mahoa+"'<b> Trở về</b></a>");
+  }
+  else{
+    await hoaController.addComment({mahoa: mahoa, comment: cmt.cmt, user: req.session.kh.tendn})
+    res.redirect("/detail/"+mahoa);
+  }
+  
+})
 app.get("/loaihoa", loaihoaController.select, (req, res) => {
 
 });
