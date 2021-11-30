@@ -65,3 +65,11 @@ module.exports.delete = async function (xoaHoa) {
     }).remove().exec();
     return d;
 }
+
+module.exports.update = async function (mahoa, data) {
+    const result = await userTableHoa.updateOne(
+        {mahoa: mahoa},
+        { $set: data},
+        {returnOriginal: false})
+    return result
+}

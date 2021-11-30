@@ -41,6 +41,7 @@ var loaihoaController = require('./controllers/loaihoacontroller');
 var hoaController = require('./controllers/hoacontroller');
 var khachhangController = require('./controllers/khachhangcontroller');
 var donhangController = require('./controllers/donhangcontroller');
+var validateData = require('./utils/formatData');
 
 async function HienThi(req, res, maloai) {
   var dslh = await loaihoaController.selectLH();
@@ -189,6 +190,14 @@ async function ThemHoa(res) {
   });
 }
 
+async function CapNhatHoa(res, mahoa) {
+  const dsls = await loaihoaController.showCombo();
+  res.render("trangcapnhat", {
+    dslh: dsls,
+    link: '/capnhat/' + mahoa
+  })
+}
+
 async function XoaLoaiHoa(res) {
   var dslh = await loaihoaController.showCombo();
   res.render("trangxoaloaihoa", {
@@ -211,6 +220,52 @@ app.get('/xoahoa/:mahoa', function (req, res) {
   var mahoa = req.params.mahoa;
   hoaController.delete(mahoa);
   res.redirect("/");
+});
+
+app.get('/capnhat/:mahoa', function (req, res) {
+  CapNhatHoa(res, req.params.mahoa)
+})
+
+app.post('/capnhat/:mahoa', async function (req, res) {
+  const mahoa = req.params.mahoa;
+  const thongtin = req.body;
+  let sampleFile = null;
+  let uploadPath;
+  let rawData = {
+    tenhoa: thongtin.ten_hoa,
+    maloai: thongtin.loai,
+    giaban: thongtin.gia_ban,
+    mota: thongtin.mo_ta,
+    hinh: ''
+  }
+  if (req.files) {
+    sampleFile = req.files.file;
+    rawData = {
+      ...rawData,
+      hinh: sampleFile.name
+    };
+  }
+  const data = validateData.formatData(rawData)
+  if (data) {
+    if (data.hinh) {
+      uploadPath = __dirname + '/public/images/' + data.hinh;
+      sampleFile.mv(uploadPath, async function (err) {
+        if (err)
+          return res.status(500).send(err);
+        await hoaController.update(mahoa, data)
+        if (data.loai)
+          res.redirect("/" + thongtin.loai);
+        else
+          res.redirect("/");
+      }); 
+    } else {
+      await hoaController.update(mahoa, data)
+      if (data.loai)
+          res.redirect("/" + thongtin.loai);
+      else
+        res.redirect("/");
+    }
+  } else res.redirect("/capnhat/" + mahoa);
 });
 
 app.get('/themloaihoa', function (req, res) {
