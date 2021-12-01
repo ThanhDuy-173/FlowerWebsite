@@ -15,14 +15,14 @@ module.exports.select = async function(mahoa){
 }
 
 module.exports.add = async function(cmt){
-    console.log("dirty",cmt.comment);
-    console.log
-    var clean = sanitizeHtml(cmt.comment);
-    clean = encodeURI(clean); 
-    console.log("clean",clean);
+    // console.log("dirty",cmt.comment);
+    // console.log
+    // var clean = sanitizeHtml(cmt.comment);
+    // clean = encodeURI(clean); 
+    // console.log("clean",clean);
     
-    if (clean=="") return 0;
-    const newcmt = new cmtTable({mahoa: cmt.mahoa, user: cmt.user, comment: clean});
+    // if (clean=="") return 0;
+    const newcmt = new cmtTable({mahoa: cmt.mahoa, user: cmt.user, comment: cmt.comment});
     const x = await newcmt.save();
     return x;
     
