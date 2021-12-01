@@ -6,6 +6,20 @@ app.use(express.urlencoded({
   extended: true
 }));
 
+var http = require('http');
+const https = require('https');
+const hostname = '192.168.1.8';
+const port = 443;
+
+var fs = require('fs');
+var privateKey  = fs.readFileSync('./ssl/server.key', 'utf8');
+var certificate = fs.readFileSync('./ssl/server.crt', 'utf8');
+var credentials = {key: privateKey, cert: certificate};
+const options = {
+  key: privateKey,
+  cert: certificate
+};
+
 // set the view engine to ejs
 app.set("view engine", "ejs");
 //Khai Báo Thư Viện Public
@@ -514,4 +528,13 @@ app.get("/loaihoa", loaihoaController.select, (req, res) => {
 
 });
 
-app.listen(80);
+//app.listen(443);
+http.createServer(function (req, res) {
+    res.writeHead(301, { "Location": "https://192.168.1.8:443" });
+    res.end();
+}).listen(80);
+var httpsServer = https.createServer(options, app);
+//httpsServer.listen(443);
+httpsServer.listen(port, () => {
+  console.log("server starting on port : " + port)
+});
