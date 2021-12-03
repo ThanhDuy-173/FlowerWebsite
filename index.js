@@ -45,6 +45,10 @@ const GOOGLE_CLIENT_SECRET = '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'
 const REDIRECT_URL = 'https://developers.google.com/oauthplayground'
 const MAILING_SERVICE_REFRESH_TOKEN = '1//04xNpOGzqN0DZCgYIARAAGAQSNwF-L9IrW4E5ovJgzmWu9y44oHAP_SzS2USK0L_9afHUyGGJpf5ukrbUjiVJQgwqV_qRSJELWDU'
 const OAuth2Client = new OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, REDIRECT_URL)
+const GOOGLE_USER_ID = '422579058199-1eeg8cd7igiikb7qbmi25iljovhgqi4f.apps.googleusercontent.com'
+const GOOGLE_USER_SECRET = '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'
+const OAuth2User = new OAuth2(GOOGLE_USER_ID, GOOGLE_USER_SECRET, REDIRECT_URL)
+OAuth2User.setCredentials({ refresh_token: '1//04zc011YZyt_HCgYIARAAGAQSNwF-L9Ir2Fl97SrFt4tOHhk1ZvytECrtVfoylRtN0nGlOQyDAhvaBcTP5NJMJiY-bRo4vjpZcaw'})
 OAuth2Client.setCredentials({ refresh_token: MAILING_SERVICE_REFRESH_TOKEN })
 
 // upload file
@@ -65,9 +69,10 @@ async function HienThi(req, res, maloai) {
   if (req.session.kh != undefined && req.session.kh != "")
     tenkh = "Chào " + req.session.kh.hoten + "\t<button type='button' onclick='Logout()'>Đăng xuất</button>";
   var menu = `
-      <td width="33%" height="23" bgcolor="#CCFFCC"><strong><a href="/"><strong>Trang chủ</strong></a></td>
-      <td width="33%"><strong><a href="/tim_kiem"><strong>Tìm kiếm bó hoa</strong></a></td>
-      <td width="33%"><strong><a href="/dangky">Đăng ký mới</a></strong></td>
+      <td width="25%" height="23" bgcolor="#CCFFCC"><strong><a href="/"><strong>Trang chủ</strong></a></td>
+      <td width="25%"><strong><a href="/tim_kiem"><strong>Tìm kiếm bó hoa</strong></a></td>
+      <td width="25%"><strong><a href="/phanhoi"><strong>Phản hồi</strong></a></td>
+      <td width="25%"><strong><a href="/dangky">Đăng ký mới</a></strong></td>
   `;
   if(req.session.kh != undefined && req.session.kh.role == "1"){
     menu = `
@@ -197,6 +202,38 @@ async function sendEmail(toMail, subject, message) {
   });
 }
 
+async function phanHoi(message) {
+  const accessToken = await OAuth2User.getAccessToken()
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        type: 'OAuth2',
+        user: 'userflower704@gmail.com',
+        clientId: GOOGLE_USER_ID,
+        clientSecret: GOOGLE_USER_SECRET,
+        refreshToken: '1//04zc011YZyt_HCgYIARAAGAQSNwF-L9Ir2Fl97SrFt4tOHhk1ZvytECrtVfoylRtN0nGlOQyDAhvaBcTP5NJMJiY-bRo4vjpZcaw',
+        accessToken: accessToken
+    }
+  })
+
+  var mailOptions = {
+    from: 'userflower704@gmail.com',
+    to: 'flowershopwebsite@gmail.com',
+    subject: 'Phản hồi từ người dùng',
+    html: message
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email send: ' + info.response);
+    }
+    transporter.close();
+  });
+}
+
 async function ThemHoa(res) {
   var dslh = await loaihoaController.showCombo();
   res.render("trangthemhoa", {
@@ -218,6 +255,18 @@ async function XoaLoaiHoa(res) {
     dslh: dslh
   });
 }
+
+app.get('/phanhoi', function (req, res) {
+  res.render('phanhoi')
+});
+
+app.post('/phanhoi', function (req, res) {
+  const { content } = req.body
+  if (content) {
+    phanHoi(content)
+    res.redirect('/phanhoi')
+  }
+});
 
 app.get('/xoaloaihoa', function (req, res) {
   XoaLoaiHoa(res);
