@@ -1,8 +1,8 @@
 var bangkhachhang = require('../models/khachhangmodel');
 module.exports.login = async function (tendn, matkhau) {
     var dskh = await bangkhachhang.select({
-        tendn:  JSON.stringify(tendn),
-        matkhau: JSON.stringify(matkhau)
+        tendn:  tendn.toString(),
+        matkhau: matkhau.toString()
     });
     if (dskh.length > 0)
         return dskh[0];
